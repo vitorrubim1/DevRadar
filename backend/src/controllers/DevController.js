@@ -1,6 +1,7 @@
 const axios = require('axios');
 const Dev = require('../models/Dev');
 const parseStringAsArray = require ('../utils/parseStringAsArray');
+const { findConnections, sendMessage } = require ('../websocket');
 
 module.exports = {
 
@@ -38,8 +39,19 @@ module.exports = {
                 techs: techsArray,
                 location,
             });
+
+            //Filtrar as conexões que estão no maximo há 10km de distancia 
+            //E que o novo dev tenha pelo menos uma das tecnologias filtradas
+        
+
+            const sendSocketMessagesTo = findConnections(
+                { latitude, longitude },
+                techsArray,
+            );
+
+            sendMessage(sendSocketMessagesTo, 'new-dev', dev)
         }
 
         return response.json(dev);
-    }
+    },
 }
